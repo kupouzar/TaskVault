@@ -1,0 +1,26 @@
+{
+    "taskvault": {
+        "journals": [
+          {
+              "name": "My Journal",
+              "id": "97e33ea0-000a-11ef-805f-7b21bf1fd086",
+              "content": [
+                  {
+                      "name": "My Note",
+                      "type": "note",
+                      "id": "0f94b60-000a-11ef-b547-974428e6a95c",
+                      "content": "notetext"
+                  },
+                  {
+                      "name": "My Task",
+                      "type": "task",
+                      "id": "d5aafac0-000a-11ef-96e0-d1afaf875346",
+                      "due": "due",
+                      "content": "tasktext"
+                  }
+              ]
+          }
+          ]
+      }
+  }
+  
