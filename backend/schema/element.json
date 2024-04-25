@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["note", "task"]
+        },
+        "id": {
+            "type": "string"
+        },
+        "due": {
+            "type": "string"
+        },
+        "content": {
+            "type": "string"
+        },
+        "parent": {
+            "type": "string"
+        }
+    },
+    "required": ["name", "type", "parent"],
+    "additionalProperties": false
+}

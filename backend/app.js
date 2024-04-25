@@ -1,207 +1,25 @@
-//načtení modulů
+// modules
 const express = require("express");
-const fs = require("fs");
-const uuid = require("uuid");
-const bodyParser = require("body-parser");
-const { join } = require("path");
 
-//inicializace nového Express.js serveru
 const app = express();
-//definování portu, na kterém má aplikace běžet na localhostu
-const port = 3000;
 
-//nacteni jednoduche databaze
-var data = JSON.parse(fs.readFileSync('./db.json', 'utf8'));
+const port = 8080;
 
-//nastaveni bodyparseru
-app.use(bodyParser.urlencoded({extended: true}));
+const journalController = require("./controller/journal");
+const testController = require("./controller/test");
+const elementController = require("./controller/element");
 
-//ui na testovani post metod
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// POST TESTS
-
-app.get("/test/journal/create", (req, res) => {
-  res.send(`
-  <h1>TaskVault test UI</h1>
-  <form action="/journal/create" method="post">
-  <input type="text" name="journalName" placeholder="Název poznámky">
-  <button type="submit">Vytvořit journal</button>
-  </form>
-  `);
+app.get("/", (req, res) => {
+    res.send("TaskVault Backend Server");
 });
 
-app.get("/test/element/create", (req, res) => {
-  res.send(`
-  <h1>TaskVault test UI</h1>
-  <form action="/element/create" method="post">
-  <input type="text" name="elementName" placeholder="Název poznámky">
-  <input type="text" name="parentJournalID" placeholder="ID nadřazeného journalu">
-  <button type="submit">Vytvořit element</button>
-  </form>
-  `);
-});
+app.use("/journal", journalController);
+app.use("/test", testController);
+app.use("/element", elementController);
 
-app.get("/test/journal/delete", (req, res) => {
-  res.send(`
-  <h1>TaskVault test UI</h1>
-  <form action="/journal/delete" method="post">
-  <input type="text" name="journalID" placeholder="ID journalu ke smazání">
-  <button type="submit">Smazat</button>
-  </form>
-  `);
-});
-
-// simple function to save the data in .json
-function saveDB(){
-  const saveData = JSON.stringify(data);
-  fs.writeFile("./db.json", saveData, (err) => {
-    if(err) {
-      console.error("Error saving the json database: ", err);
-      return;
-    } else {
-      console.log("Database saved.");
-    }
-  });
-}
-
-// JOURNAL
-
-// create a journal
-app.post("/journal/create", (req, res) => {
-  const journalName = req.body.journalName;
-  // new blank journal
-  newJournal = {
-    "name": journalName,
-    "id": uuid.v1(),
-    "content": []
-  }
-  data.taskvault.journals.push(newJournal);
-  console.log(`Created journal \'${journalName}.\'`);
-  res.send(`Journal \'${journalName}\' successfully created.`);
-  saveDB();
-});
-
-
-// get a journal
-app.get("/journal/get", (req, res) => {
-  const id = req.query.id;
-  console.log(`(journal/get): Got journal request, journal id=\'${id}\'.`);
-  var journal = data.taskvault.journals.find(j => j.id === id);
-  console.log(`(journal/get): Found journal id=\'${id}\', sending its data.`);
-  res.send(journal);
-});
-
-// update a journal
-app.post("/journal/update", (req, res) => {
-  const journalUpdate = req.body.journal;
-  var journalToUpdate = data.taskvault.journals.find(j => j.id === journalUpdate.id);
-  // update the journal with the newly received journal data
-  journalToUpdate = journalUpdate;
-  const message = `(journal/update): Journal id=\'${id}\' updated.`
-  console.log(message);
-  res.send(message);
-  saveDB();
-});
-
-// delete a journal
-app.post("/journal/delete", (req, res) => {
-  const id = req.body.journalID;
-  const message = `(journal/delete): Journal id=\'${id}\' deleted.`;
-  const indexToSplice = data.taskvault.journals.findIndex(j => j.id === id);
-  if(indexToSplice > -1) {
-    data.taskvault.journals.splice(indexToSplice, 1);
-    console.log(message);
-    res.send(message);
-    saveDB();
-  } else {
-    res.send(`(journal/delete): Error - journal id=\'${id}\' not found.`);
-    console.error(`(journal/delete): Error - journal id=\'${id}\' not found.`);
-  }
-});
-
-// get list of journals
-app.get("/journal/list", (req, res) => {
-  var journalList = [];
-  for(const journal of data.taskvault.journals) {
-    const {content, ...journalEntry} = journal;
-    journalList.push(journalEntry);
-  }
-  res.send(journalList);
-});
-
-
-
-
-// Element = Task or note inside Journal
-
-// create a journal element
-app.post("/element/create", (req, res) => {
-  const parentJournalID = req.body.parentJournalID;
-  const elementName = req.body.elementName;
-  newElement = {
-    "name": elementName,
-    "id": uuid.v1(),
-    "type": elementType,
-    "due": taskDueDate,
-    "content": ""
-  }
-
-  var parentJournal = data.taskvault.journals.find(j => j.id === parentJournalID);
-  parentJournal.content.push(newElement);
-  console.log(`Created a new element \'${newElement}\' in journal id=\'${parentJournal.id}\'.`);
-  res.send(`Journal \'${parentJournal.name}\' successfully created.`);
-  saveDB();
-});
-
-// get an element
-app.get("/element/get", (req, res) => {
-  const journalID = req.query.journalID;
-  const eID = req.query.eID;
-  var journal = data.taskvault.journals.find(j => j.id === journalID);
-  var element = journal.content.find(e => e.id === eID);
-  console.log(`(element/get): Got an element request, element eID=\'${eID}\', element type=\'${element.type}\'.`);
-  res.send(element);
-});
-
-// update an element
-app.post("/element/update", (req, res) => {
-  const journalID = req.query.journalID;
-  const eUpdate = req.body.element;
-  var journal = data.taskvault.journals.find(j => j.id === journalID);
-  var eToUpdate = data.taskvault.journals.find(e => e.id === eUpdate.id);
-  // update the journal with the newly received journal data
-  eToUpdate = eUpdate;
-  const message = `(element/update): Element id=\'${id}\' updated.`
-  console.log(message);
-  res.send(message);
-  saveDB();
-});
-
-// delete an element
-app.get("/element/delete", (req, res) => {
-  //TODO
-  const journalID = req.body.journalID;
-  const eID = req.body.eID;
-  const message = `(element/delete): Element id=\'${id}\' deleted.`;
-  const indexToSplice = data.taskvault.journals.findIndex(j => j.id === id);
-  if(indexToSplice > -1) {
-    data.taskvault.journals.splice(indexToSplice, 1);
-    console.log(message);
-    res.send(message);
-    saveDB();
-  } else {
-    res.send(`(journal/delete): Error - journal id=\'${id}\' not found.`);
-    console.error(`(journal/delete): Error - journal id=\'${id}\' not found.`);
-  }
-});
-
-// list elements of a journal
-app.get("/element/list", (req, res) => {
-  res.send('TaskVault backend server.')
-});
-
-
-//nastavení portu, na kterém má běžet HTTP server
 app.listen(port, () => {
-  console.log(`TaskVault server listening at http://localhost:${port}`)
+    console.log(`TaskVault server listening at http://localhost:${port}`)
 });

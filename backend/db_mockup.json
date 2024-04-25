@@ -9,14 +9,16 @@
                     "name": "My Note",
                     "type": "note",
                     "id": "0f94b60-000a-11ef-b547-974428e6a95c",
-                    "content": "notetext"
+                    "content": "notetext",
+                    "parent": "97e33ea0-000a-11ef-805f-7b21bf1fd086"
                 },
                 {
                     "name": "My Task",
                     "type": "task",
                     "id": "d5aafac0-000a-11ef-96e0-d1afaf875346",
                     "due": "due",
-                    "content": "tasktext"
+                    "content": "tasktext",
+                    "parent": "97e33ea0-000a-11ef-805f-7b21bf1fd086"
                 }
             ]
         }

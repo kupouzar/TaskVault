@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "properties": {
+        "type": "object",
+        "properties": {
+            "journals": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "content": {
+                            "type": "aray",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["note", "task"]
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "due": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["name", "type", "id", "content"],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
