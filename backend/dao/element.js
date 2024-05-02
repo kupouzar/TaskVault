@@ -5,6 +5,7 @@ const db = require("./db");
 let data = db.load();
 
 function create(elementData) {
+    data = db.load();
     // push the new element into data
     let newElement;
     if(elementData.type === "note") {
@@ -31,27 +32,37 @@ function create(elementData) {
     db.save(data);
     return {
         code: "elementCreated",
-        message: `Element \'${elementData.name}\' of journal id=\'${parentJournal.id}\' was created.`
+        message: `Element \'${elementData.name}\' of journal id=\'${parentJournal.id}\' has been created.`
     };
 }
 
-function update(journalData) {
-    let journalToUpdate = data.taskvault.journals.find(j => j.id === journalData.id);
+function update(elementData) {
+    data = db.load();
+    let parentJournalIndex = data.taskvault.journals.findIndex(j => j.id === elementData.parent);
     // if not found
-    if(journalToUpdate === undefined) {
-        const message = json({
+    if(parentJournalIndex === -1) {
+        const message = JSON.stringify({
             code: "journalNotFound",
-            message: `Journal id=\'${journalData.id}\' not found, journal not updated.`
+            message: `Journal id=\'${parentJournal.id}\' not found.`
         });
         return message;
     } else {
-        // update the journal with the newly received journal data
-        journalToUpdate = journalData;
-        const message = json({
-            code: "journalUpdated",
-            message: `Journal id=\'${id}\' updated.`
+        // locate the element inside its parent journal
+        let elementIndex = data.taskvault.journals[parentJournalIndex].content.findIndex(e => e.id === elementData.id);
+        if(elementIndex === -1) {
+            const message = JSON.stringify({
+                code: "elementNotFound",
+                message: `Element id=\'${elementData.id}\' of journal id= \'${elementData.parent}\'not found.`
+            });
+            return message;
+        }
+        // update the element with the newly received data
+        data.taskvault.journals[parentJournalIndex].content[elementIndex] = elementData;
+        const message = JSON.stringify({
+            code: "elementUpdated",
+            message: `Element \'${elementData.name}\' of journal id=\'${elementData.parent}\' has been updated.`
         });
-        db.save();
+        db.save(data);
         return message;
     }
 }
@@ -78,11 +89,10 @@ function remove(journalID){
 
 function get(journalID) {
     data = db.load();
-    console.log(data);
     const id = journalID;
     var journal = data.taskvault.journals.find(j => j.id === id);
     if(journal === undefined) {
-        const message = json({
+        const message = JSON.stringify({
             code: "journalNotFound",
             message: `Journal id=\'${journalData.id}\' not found.`
         });
@@ -92,13 +102,21 @@ function get(journalID) {
     }
 }
 
-function list(){
-    let journalList = [];
-    for(const journal of data.taskvault.journals) {
-        const {content, ...journalEntry} = journal;
-        journalList.push(journalEntry);
+function list(parentJournalID){
+    parentJournal = data.taskvault.journals.find(j => j.id === parentJournalID);
+    if(parentJournal === undefined) {
+        const message = JSON.stringify({
+            code: "parentJournalNotFound",
+            message: `Parent journal id=\'${parentJournalID}\' not found.`
+        });
+        console.log(message);
+        return message;
     }
-    return journalList;
+    let elementList = [];
+    for(const element of parentJournal.content) {
+        elementList.push(element);
+    }
+    return elementList;
 }
 
 module.exports = {create, update, remove, get, list};

@@ -6,10 +6,11 @@ const ajv = new Ajv();
 const bodyParser = require("body-parser");
 
 // data access object
-const journalDao = require("../../dao/journal");
+const elementDao = require("../../dao/element");
 
-async function listJournal(req, res){
-    res.send(journalDao.list());
+async function listElement(req, res){
+    const parentJournalID = req.query.parentJournalID;
+    res.send(elementDao.list(parentJournalID));
 }
 
-module.exports = listJournal;
+module.exports = listElement;

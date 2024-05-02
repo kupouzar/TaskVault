@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>testRemoveJournal</title>
+  <title>testRemoveElement</title>
 </head>
 <body>
-  <h2>TaskVault - testRemoveJournal</h2>
+  <h2>TaskVault - testRemoveElement</h2>
   <form id="testForm">
-    <label for="name">journalID:</label>
+    <label for="name">elementID:</label>
     <input type="text" id="id" name="id" required>
     <br>
     <br>
@@ -27,7 +27,7 @@
       });
 
       // Send JSON data to server
-      fetch('/journal/remove', {
+      fetch('/element/remove', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -6,27 +6,30 @@ const ajv = new Ajv();
 const bodyParser = require("body-parser");
 
 // data access object
-const journalDao = require("../../dao/journal");
+const elementDao = require("../../dao/element");
 
 // validator schema
-const schema = require("../../schema/journal.json");
+const schema = require("../../schema/element.json");
 
-async function updateJournal(req, res){
+async function updateElement(req, res){
     // error management
     try {
-        let journalData = req.body;
+        let elementData = req.body;
 
         // validation
-        const valid = ajv.validate(schema, journalData);
+        const valid = ajv.validate(schema, elementData);
+        console.log(elementData);
         if(!valid){
             res.status(400).json({
                 "code": "dToInNotValid",
-                "message": "Journal data is not valid!",
+                "message": "Element data is not valid!",
                 "validationError": ajv.errors
             });
             return;
         }
-        res.send(journalDao.update(journalData));
+        const message = elementDao.update(elementData);
+        console.log(message);
+        res.send(message);
     }
 
     catch(error) {
@@ -36,4 +39,4 @@ async function updateJournal(req, res){
     }
 }
 
-module.exports = updateJournal;
+module.exports = updateElement;

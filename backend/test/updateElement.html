@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>testUpdateJournal</title>
+  <title>testUpdateElement</title>
 </head>
 <body>
-  <h2>TaskVault - testUpdateJournal</h2>
+  <h2>TaskVault - testUpdateElement</h2>
   <form id="testForm">
     <label for="name">Data:</label>
-    <input type="textarea" id="journal" name="journal" required>
+    <input type="textarea" id="element" name="element" required>
     <br>
     <br>
     <button type="button" onclick="submitForm()">Submit</button>
@@ -27,12 +27,12 @@
       });
 
       // Send JSON data to server
-      fetch('/journal/create', {
+      fetch('/element/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(jsonData)
+        body: jsonData.element
       })
       .then(response => {
         if (!response.ok) {

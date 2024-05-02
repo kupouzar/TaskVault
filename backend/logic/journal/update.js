@@ -14,7 +14,7 @@ const schema = require("../../schema/journal.json");
 async function updateJournal(req, res){
     // error management
     try {
-        let journalData = req.body;
+        let journalData = req.body.journal;
 
         // validation
         const valid = ajv.validate(schema, journalData);
