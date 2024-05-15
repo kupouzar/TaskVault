@@ -1,5 +1,6 @@
 // modules
 const express = require("express");
+const cors = require("cors");
 
 const app = express();
 
@@ -11,6 +12,7 @@ const elementController = require("./controller/element");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.get("/", (req, res) => {
     res.send("TaskVault Backend Server");

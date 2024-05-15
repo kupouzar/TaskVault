@@ -87,18 +87,21 @@ function remove(journalID){
     }
 }
 
-function get(journalID) {
+function get(journalID, elementID) {
     data = db.load();
     const id = journalID;
-    var journal = data.taskvault.journals.find(j => j.id === id);
-    if(journal === undefined) {
+    const eid = elementID;
+    let journal = data.taskvault.journals.find(j => j.id === id);
+    console.log(journal);
+    let element = journal.content.find(e => e.id === eid);
+    if(journal === undefined || element === undefined) {
         const message = JSON.stringify({
-            code: "journalNotFound",
-            message: `Journal id=\'${journalData.id}\' not found.`
+            code: "elementNotFound",
+            message: `Element id=\'${elementID}\' of journal id=\'${journalData.id}\' not found.`
         });
         return message;
     } else {
-        return journal;
+        return element;
     }
 }
 

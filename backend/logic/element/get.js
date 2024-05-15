@@ -6,7 +6,7 @@ const ajv = new Ajv();
 const bodyParser = require("body-parser");
 
 // data access object
-const journalDao = require("../../dao/journal");
+const elementDao = require("../../dao/element");
 
 // validator schema
 const schema = {"type": "string"};
@@ -14,10 +14,11 @@ const schema = {"type": "string"};
 async function getJournal(req, res){
     // error management
     try {
-        const journalID = req.query.id;
+        const journalID = req.query.pid;
+        const elementID = req.query.eid;
 
         // validation
-        const valid = ajv.validate(schema, journalID);
+        const valid = ajv.validate(schema, journalID) && ajv.validate(schema, elementID);
         if(!valid){
             res.status(400).json({
                 "code": "dToInNotValid",
@@ -26,7 +27,7 @@ async function getJournal(req, res){
             });
             return;
         }
-        res.send(journalDao.get(journalID));
+        res.send(elementDao.get(journalID, elementID));
     }
 
     catch(error) {
